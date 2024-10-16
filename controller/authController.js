@@ -17,7 +17,16 @@ const signToken = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-
+  const cookiesOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_IN * 24 * 60 * 60 * 1000
+    ),
+    secure: true,
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookiesOptions.secure = true;
+  res.cookie('variable', token, cookiesOptions);
+  user.password = undefined;
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -125,7 +134,7 @@ exports.forgetPassword = catchasync(async (req, res, next) => {
   If you did't forget your password, please ignore this email`;
   await sendEmail({
     email: user.email,
-    subject: 'Your password reset token (vaild for 10 main) ',
+    subject: 'Your password reset token (valid for 10 main) ',
     message,
   });
   rs.status(200).json({
@@ -145,10 +154,10 @@ exports.resetPassword = catchasync(async (req, res, next) => {
     PasswordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-  // if token  has not expried  and there is user , set the new password
+  // if token  has not expired  and there is user , set the new password
 
   if (!user) {
-    return next(new AppError('Token id invlid or has expried', 400));
+    return next(new AppError('Token id invalid or has expired', 400));
   }
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
@@ -160,11 +169,12 @@ exports.resetPassword = catchasync(async (req, res, next) => {
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //  get user fro collaction
+
   const user = await User.findById(req.user.id).select('+password');
 
   // check if postID current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError('Your currrent password is wrong', 401));
+    return next(new AppError('Your current password is wrong', 401));
   }
   // if so update password
   user.password = req.body.password;

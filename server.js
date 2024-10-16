@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const app = require('./app');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: './config.env' });
+dotenv.config({ path: './.env' });
 
 process.on('uncaughtException', (err) => {
   console.log('uncaught Exception');
@@ -21,9 +21,9 @@ mongoose
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
-  .then(() => console.log('DB conncetion successfull'));
+  .then(() => console.log('DB connection successful'));
 
-const   port = process.env.PORT || 4000;
+const port = process.env.PORT || 4000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
   
