@@ -116,7 +116,7 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.forgetPassword = catchasync(async (req, res, next) => {
-  // get user based on Postid
+  // get user based on Post id
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(new AppError('this is no user with email address', 404));
@@ -130,8 +130,7 @@ exports.forgetPassword = catchasync(async (req, res, next) => {
     'host'
   )}/api/v1/users/forgetpassword/${resetToken}`;
 
-  const message = `Forget your password? submit a patch request with your new password and passwordConfirm to ${resetUrl}. \n 
-  If you did't forget your password, please ignore this email`;
+  const message = `Forget your password? submit a patch request with your new password and passwordConfirm to ${resetUrl}. If you did't forget your password, please ignore this email`;
   await sendEmail({
     email: user.email,
     subject: 'Your password reset token (valid for 10 main) ',

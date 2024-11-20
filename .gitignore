@@ -1,3 +1,9 @@
 /node_modules
 *.env.local
-config.env
+/.config.env
+
+/.env
+
+git rm .env.local --cached
+git rm .env.staging --cached
+git commit -m "Stopped tracking env.local, and env.staging"
